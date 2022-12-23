@@ -52,6 +52,25 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
+
+## compile uWebSocket
+add_custom_target(uWebSockets COMMAND make all
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets)
+
+
+set(${PROJECT_NAME}_SRC
+  src/main.cpp)
+
+set(${PROJECT_NAME}_HDR
+  )
+
+add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} ${${PROJECT_NAME}_HDR} ${uWebSocket_HDR})
+target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/src;${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/src>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+
+
 ##### Find dependencies
-find_package(CPPZMQ REQUIRED)
-find_package(nlohmann_json 3.2.0 REQUIRED)
+# find_package(CPPZMQ REQUIRED)
+# find_package(nlohmann_json 3.2.0 REQUIRED)
