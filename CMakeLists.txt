@@ -3,7 +3,7 @@
 # Set cmake mimimun version
 cmake_minimum_required(VERSION 3.5)
 
-project(meshcat-cpp
+project(MeshcatCpp
   VERSION 0.1.0)
 
 # ouptut paths
@@ -52,24 +52,35 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
+find_package(Threads REQUIRED)
 
 ## compile uWebSocket
 add_custom_target(uWebSockets COMMAND make all
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets)
 
-
 set(${PROJECT_NAME}_SRC
-  src/main.cpp)
+  src/Meshcat.cpp)
 
 set(${PROJECT_NAME}_HDR
-  )
+  include/MeshcatCpp/Meshcat.h)
 
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} ${${PROJECT_NAME}_HDR} ${uWebSocket_HDR})
-target_include_directories(${PROJECT_NAME} PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/src;${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/src>"
+add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} ${${PROJECT_NAME}_HDR})
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/src;${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/src>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads ${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/uSockets.a -lz)
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+add_dependencies(${PROJECT_NAME} uWebSockets)
+
+add_executable(test test/meshcat_test.cpp)
+target_link_libraries(test ${PROJECT_NAME})
 
 ##### Find dependencies
 # find_package(CPPZMQ REQUIRED)
