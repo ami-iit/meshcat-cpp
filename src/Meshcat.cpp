@@ -1,4 +1,5 @@
 #include <MeshcatCpp/Meshcat.h>
+#include <MeshcatCpp/impl/FindResource.h>
 
 #include <fstream>
 #include <future>
@@ -32,17 +33,17 @@ public:
 
     Impl()
     {
-        if (!this->load_file("./misc/index.html", this->index_html_))
+        if (!this->load_file("index.html", this->index_html_))
         {
             throw std::runtime_error("Unable to load index.html");
         }
 
-        if (!this->load_file("./misc/favicon.ico", this->favicon_))
+        if (!this->load_file("favicon.ico", this->favicon_))
         {
             throw std::runtime_error("Unable to load index.html");
         }
 
-        if (!this->load_file("./misc/main.min.js", this->main_min_js_))
+        if (!this->load_file("main.min.js", this->main_min_js_))
         {
             throw std::runtime_error("Unable to load main.min.js");
         }
@@ -111,9 +112,10 @@ public:
     std::thread websocket_thread_{};
 
 private:
-    static bool load_file(std::string_view filename, std::string& content)
+    static bool load_file(const std::string& filename, std::string& content)
     {
-        std::ifstream file(filename.data(), std::ios::in);
+        const auto file_path = MeshcatCpp::details::get_resource_path(filename);
+        std::ifstream file(file_path.c_str(), std::ios::in);
         if (!file.is_open())
         {
             return false;
