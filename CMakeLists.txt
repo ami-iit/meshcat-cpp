@@ -53,6 +53,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 find_package(Threads REQUIRED)
+find_package(ZLIB REQUIRED)
 
 ## compile uWebSocket
 add_custom_target(uWebSockets COMMAND make all
@@ -68,20 +69,42 @@ add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} ${${PROJECT_NAME}_HDR})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/src;${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/src>"
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+  "$<INSTALL_INTERFACE:>")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads ${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/uSockets.a -lz)
-
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 add_dependencies(${PROJECT_NAME} uWebSockets)
 
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  Threads::Threads
+  ZLIB::ZLIB
+  ${CMAKE_CURRENT_SOURCE_DIR}/uWebSockets/uSockets/uSockets.a)
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT  ${PROJECT_NAME}
+  COMPONENT runtime
+  LIBRARY       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT shlib
+  ARCHIVE       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT lib
+  RUNTIME       DESTINATION "${CMAKE_INSTALL_BINDIR}"                            COMPONENT bin
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/MeshcatCpp")
+
+include(InstallBasicPackageFiles)
+install_basic_package_files(${PROJECT_NAME}
+  NAMESPACE MeshcatCpp::
+  VERSION ${${PROJECT_NAME}_VERSION}
+  COMPATIBILITY SameMajorVersion
+  VARS_PREFIX ${PROJECT_NAME}
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+# install the content of the misc
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/misc
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
+
+include(AddUninstallTarget)
+
 add_executable(test test/meshcat_test.cpp)
 target_link_libraries(test ${PROJECT_NAME})
-
-##### Find dependencies
-# find_package(CPPZMQ REQUIRED)
-# find_package(nlohmann_json 3.2.0 REQUIRED)
