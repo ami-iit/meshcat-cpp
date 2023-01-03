@@ -1,3 +1,10 @@
+/**
+ * @file meshcat_example.cpp
+ * @authors Giulio Romualdi
+ * @copyright This software may be modified and distributed under the terms of the BSD-3-Clause
+ * license.
+ */
+
 #include <MeshcatCpp/Material.h>
 #include <MeshcatCpp/Meshcat.h>
 #include <MeshcatCpp/Shape.h>

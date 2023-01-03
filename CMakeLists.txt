@@ -135,5 +135,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/misc
 
 include(AddUninstallTarget)
 
-add_executable(test test/meshcat_test.cpp)
-target_link_libraries(test ${PROJECT_NAME}::${PROJECT_NAME})
+# Build examples
+set(MESHCAT_CPP_BUILT_EXAMPLES OFF)
+if(${MESHCAT_CPP_BUILT_EXAMPLES
+  add_subdirectory(examples)
+endif()
