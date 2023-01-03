@@ -12,6 +12,7 @@
 
 #include <MeshcatCpp/Material.h>
 #include <MeshcatCpp/Shape.h>
+#include <MeshcatCpp/MatrixView.h>
 
 namespace MeshcatCpp
 {

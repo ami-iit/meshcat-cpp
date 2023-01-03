@@ -8,10 +8,8 @@
 #ifndef MESHCAT_CPP_MATERIAL_H
 #define MESHCAT_CPP_MATERIAL_H
 
-// #include <msgpack.hpp>
 
 #include <string>
-// e#include <MeshcatCpp/GenericElement.h> //
 #include <unordered_map>
 #include <utility>
 
@@ -46,6 +44,9 @@ public:
                                                   {Type::MeshLambertMaterial, "MeshLambertMaterial"},
                                                   {Type::MeshToonMaterial, "MeshToonMaterial"},
                                                   {Type::LineBasicMaterial, "LineBasicMaterial"}};
+
+
+    void set_color(uint8_t r, uint8_t g, uint8_t b);
 };
 
 } // namespace MeshcatCpp
