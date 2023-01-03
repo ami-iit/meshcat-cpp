@@ -36,6 +36,38 @@
 
 namespace MeshcatCpp::details
 {
+
+struct TransformData
+{
+    std::string type{"set_transform"};
+    std::string path;
+    std::array<double, 16> matrix;
+    MSGPACK_DEFINE_MAP(type, path, matrix);
+
+    MeshcatCpp::MatrixView<double> transform();
+    MeshcatCpp::MatrixView<const double> transform() const;
+};
+
+MeshcatCpp::MatrixView<double> TransformData::transform()
+{
+    constexpr MatrixView<double>::index_type rows = 4;
+    constexpr MatrixView<double>::index_type cols = 4;
+    return make_matrix_view(this->matrix.data(),
+                            rows,
+                            cols,
+                            MeshcatCpp::MatrixView<double>::MatrixStorageOrdering::ColumnMajor);
+}
+
+MeshcatCpp::MatrixView<const double> TransformData::transform() const
+{
+    constexpr MatrixView<double>::index_type rows = 4;
+    constexpr MatrixView<double>::index_type cols = 4;
+    return make_matrix_view(this->matrix.data(),
+                            rows,
+                            cols,
+                            MeshcatCpp::MatrixView<const double>::MatrixStorageOrdering::ColumnMajor);
+}
+
 template <typename T> struct PropertyTrampoline : public ::MeshcatCpp::Property<T>
 {
     // TOFO make it const
@@ -221,7 +253,6 @@ struct SetObjectData
     LumpedObjectData object;
     MSGPACK_DEFINE_MAP(type, path, object);
 };
-
 
 } // namespace MeshcatCpp::details
 
@@ -409,6 +440,28 @@ public:
         });
     }
 
+    void set_transform(std::string_view path, MatrixView<const double> matrix)
+    {
+        details::TransformData data{.path = this->absolute_path(path)};
+
+        // TODO define the copy assignment operator for matrix view
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                data.transform()(i, j) = matrix(i, j);
+            }
+        }
+
+        this->loop_->defer([this, data = std::move(data)]() {
+            std::stringstream message_stream;
+            msgpack::pack(message_stream, data);
+            std::string msg = message_stream.str();
+            this->app_->publish("all", msg, uWS::OpCode::BINARY, false);
+            (*this->root_)[data.path]->value().transform = std::move(msg);
+        });
+    }
+
     std::thread websocket_thread_{};
 
 private:
@@ -491,7 +544,7 @@ private:
 
     std::shared_ptr<details::TreeNode<Node>> root_;
     std::string prefix_{"meshcat"};
-};
+    };
 
 Meshcat::Meshcat()
 {
@@ -520,6 +573,12 @@ void Meshcat::set_property(std::string_view path, const std::string& property, b
 void Meshcat::set_object(std::string_view path, const Sphere& sphere, const Material& material)
 {
     this->pimpl_->set_object(path, sphere, material);
+}
+
+
+void Meshcat::set_transform(std::string_view path, MatrixView<const double> matrix)
+{
+    this->pimpl_->set_transform(path, matrix);
 }
 
 void Meshcat::set_object(std::string_view path, const Cylinder& cylinder, const Material& material)

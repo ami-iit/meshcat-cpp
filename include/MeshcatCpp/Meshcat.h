@@ -71,6 +71,7 @@ public:
                     const Ellipsoid& ellipsoid,
                     const Material& material = Material());
 
+    void set_transform(std::string_view path, MatrixView<const double> matrix);
 private:
 
     class Impl;
