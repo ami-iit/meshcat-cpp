@@ -10,6 +10,7 @@
 
 #include <cassert>
 
+#include <cstring>
 #include <type_traits>
 
 namespace MeshcatCpp
@@ -56,6 +57,8 @@ struct is_allowed_element_type_conversion
  *   - from an object having a public member called <code>IsRowMajor</code>, the correct storage
  order is chosen.
  *   - from another MatrixView, the correct storage order is chosen.
+ * @note the original implementation can be found in
+ https://github.com/robotology/idyntree/blob/a7fdef001d38e47aabcdc541607a255101212dd9/src/core/include/iDynTree/Core/MatrixView.h
  */
 template <class ElementType> class MatrixView
 {
@@ -69,7 +72,7 @@ public:
     /**
      * Enum describing the possible matrix storage ordering
      */
-    enum class MatrixStorageOrdering
+    enum MatrixStorageOrdering
     {
         RowMajor, /*!< Row Major ordering, i.e. matrix is serialized row by row */
         ColumnMajor /*!< Column Major ordering, i.e. matrix is serialized row by column */
@@ -191,6 +194,34 @@ public:
     pointer data() const noexcept
     {
         return m_storage;
+    }
+
+    template <class OtherElementType,
+              class = std::enable_if_t<
+                  details::is_allowed_element_type_conversion<OtherElementType, element_type>::value>>
+    MatrixView& operator=(MatrixView<const OtherElementType> other)
+    {
+        assert(other.rows() == this->rows());
+        assert(other.cols() == this->cols());
+
+        if (other.storageOrder() == this->storageOrder())
+        {
+            std::memcpy(this->m_storage,
+                        other.data(),
+                        this->rows() * this->cols() * sizeof(element_type));
+
+            return *this;
+        }
+
+        for (index_type i = 0; i < this->rows(); i++)
+        {
+            for (index_type j = 0; j < this->rows(); j++)
+            {
+                this->operator()(i,j) = other(i,j);
+            }
+        }
+
+        return *this;
     }
 
     /**

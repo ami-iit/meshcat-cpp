@@ -443,15 +443,7 @@ public:
     void set_transform(std::string_view path, MatrixView<const double> matrix)
     {
         details::TransformData data{.path = this->absolute_path(path)};
-
-        // TODO define the copy assignment operator for matrix view
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                data.transform()(i, j) = matrix(i, j);
-            }
-        }
+        data.transform() = matrix;
 
         this->loop_->defer([this, data = std::move(data)]() {
             std::stringstream message_stream;
