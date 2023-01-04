@@ -99,7 +99,7 @@ int main()
 }
 ```
 
-Once you have run the [example](./example/meshcat_example.cpp), the `MeshcatCpp::Meshcat` class will print the `URL` at which the MeshCat server runs. Please open the link in your browser and you should be able to see the following screen
+Once you have run the [example](./examples/meshcat_example.cpp), the `MeshcatCpp::Meshcat` class will print the `URL` at which the MeshCat server runs. Please open the link in your browser and you should be able to see the following screen
 
 ![meshcat_screen](https://user-images.githubusercontent.com/16744101/210443219-2586afd3-0627-4bfe-95cd-145504679c31.png)
 
