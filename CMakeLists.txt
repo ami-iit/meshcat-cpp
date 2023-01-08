@@ -136,7 +136,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/misc
 include(AddUninstallTarget)
 
 # Build examples
-set(MESHCAT_CPP_BUILT_EXAMPLES OFF)
-if(${MESHCAT_CPP_BUILT_EXAMPLES
+option(MESHCAT_CPP_BUILT_EXAMPLES "Build the examples" OFF)
+if(${MESHCAT_CPP_BUILT_EXAMPLES})
   add_subdirectory(examples)
 endif()
