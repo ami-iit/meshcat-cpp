@@ -27,7 +27,7 @@ Self-contained C++ interface for the [MeshCat visualizer](https://github.com/rde
 
 You can build the library coping and paste the following snippet into a terminal
 ```console
-git clone https://github.com/GiulioRomualdi/meshcat-cpp.git
+git clone --recurse-submodules https://github.com/GiulioRomualdi/meshcat-cpp.git
 cd meshcat-cpp
 mkdir build && cd build
 cmake ..
@@ -58,11 +58,8 @@ MeshcatCpp::MatrixView<double> array_to_matrix_view(std::array<double, 16>& arra
 {
     constexpr MeshcatCpp::MatrixView<double>::index_type rows = 4;
     constexpr MeshcatCpp::MatrixView<double>::index_type cols = 4;
-    return MeshcatCpp::make_matrix_view(array.data(),
-                                        rows,
-                                        cols,
-                                        MeshcatCpp::MatrixView<
-                                            double>::MatrixStorageOrdering::ColumnMajor);
+    constexpr auto order = MeshcatCpp::MatrixStorageOrdering::ColumnMajor;
+    return MeshcatCpp::make_matrix_view(array.data(), rows, cols, order);
 }
 
 int main()
@@ -101,7 +98,7 @@ int main()
 
 Once you have run the [example](./examples/meshcat_example.cpp), the `MeshcatCpp::Meshcat` class will print the `URL` at which the MeshCat server runs. Please open the link in your browser and you should be able to see the following screen
 
-![meshcat_screen](https://user-images.githubusercontent.com/16744101/210443219-2586afd3-0627-4bfe-95cd-145504679c31.png)
+![meshcat_screen](https://user-images.githubusercontent.com/16744101/211311137-3271f266-1a65-4be8-9bd9-230f32bd2d83.png)
 
 
 ## 🐛 Bug reports and support
