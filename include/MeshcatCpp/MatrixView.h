@@ -37,7 +37,7 @@ template <typename T>
 struct has_IsRowMajor<T, std::void_t<decltype(T::IsRowMajor)>> : std::true_type
 {
 };
-} // namespace MatrixVireInternal
+} // namespace MatrixViewInternal
 
 namespace details
 {
@@ -48,6 +48,15 @@ struct is_allowed_element_type_conversion
 };
 
 } // namespace details
+
+/**
+ * Enum describing the possible matrix storage ordering
+ */
+enum class MatrixStorageOrdering
+{
+    RowMajor, /*!< Row Major ordering, i.e. matrix is serialized row by row */
+    ColumnMajor /*!< Column Major ordering, i.e. matrix is serialized row by column */
+};
 
 /**
  * MatrixView implements a view interface of Matrices. Both RowMajor and ColumnMajor matrices are
@@ -68,15 +77,6 @@ public:
     using index_type = std::ptrdiff_t;
     using pointer = element_type*;
     using reference = element_type&;
-
-    /**
-     * Enum describing the possible matrix storage ordering
-     */
-    enum MatrixStorageOrdering
-    {
-        RowMajor, /*!< Row Major ordering, i.e. matrix is serialized row by row */
-        ColumnMajor /*!< Column Major ordering, i.e. matrix is serialized row by column */
-    };
 
 private:
     pointer m_storage;
@@ -110,8 +110,9 @@ public:
     }
 
     template <class OtherElementType,
-              class = std::enable_if_t<
-                  details::is_allowed_element_type_conversion<OtherElementType, element_type>::value>>
+              class = std::enable_if_t<details::is_allowed_element_type_conversion<
+                  typename MatrixView<OtherElementType>::value_type,
+                  value_type>::value>>
     constexpr MatrixView(const MatrixView<OtherElementType>& other)
         : MatrixView(other.data(), other.rows(), other.cols(), other.storageOrder())
     {
@@ -165,7 +166,10 @@ public:
               std::enable_if_t<
                   std::is_convertible<decltype(std::declval<Container>().data()), pointer>::value
                       && !MatrixViewInternal::has_IsRowMajor<Container>::value
-                      && !std::is_same<Container, MatrixView>::value,
+                      && !std::is_same<Container, MatrixView>::value
+                      && !std::is_same<Container,
+                                       MatrixView<std::remove_pointer_t<
+                                           decltype(std::declval<Container>().data())>>>::value,
                   int> = 0>
     MatrixView(Container& matrix,
                const MatrixStorageOrdering& order = MatrixStorageOrdering::RowMajor)
@@ -198,8 +202,8 @@ public:
 
     template <class OtherElementType,
               class = std::enable_if_t<
-                  details::is_allowed_element_type_conversion<OtherElementType, element_type>::value>>
-    MatrixView& operator=(MatrixView<const OtherElementType> other)
+                  std::is_same_v<typename MatrixView<OtherElementType>::value_type, value_type>>>
+    MatrixView& operator=(MatrixView<OtherElementType> other)
     {
         assert(other.rows() == this->rows());
         assert(other.cols() == this->cols());
@@ -215,9 +219,9 @@ public:
 
         for (index_type i = 0; i < this->rows(); i++)
         {
-            for (index_type j = 0; j < this->rows(); j++)
+            for (index_type j = 0; j < this->cols(); j++)
             {
-                this->operator()(i,j) = other(i,j);
+                this->operator()(i, j) = other(i, j);
             }
         }
 
@@ -272,8 +276,7 @@ constexpr MatrixView<ElementType>
 make_matrix_view(ElementType* ptr,
                  typename MatrixView<ElementType>::index_type rows,
                  typename MatrixView<ElementType>::index_type cols,
-                 typename MatrixView<ElementType>::MatrixStorageOrdering order
-                 = MatrixView<ElementType>::MatrixStorageOrdering::RowMajor)
+                 MatrixStorageOrdering order = MatrixStorageOrdering::RowMajor)
 {
     return MatrixView<ElementType>(ptr, rows, cols, order);
 }
