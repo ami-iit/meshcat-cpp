@@ -22,7 +22,7 @@ MeshcatCpp::MatrixView<double> array_to_matrix_view(std::array<double, 16>& arra
 int main()
 {
     MeshcatCpp::Meshcat meshcat;
-    MeshcatCpp::Material m;
+    MeshcatCpp::Material m = MeshcatCpp::Material::get_default_material();
 
     std::array<double, 16> transform = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     auto matrix_view = array_to_matrix_view(transform);
