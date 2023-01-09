@@ -37,3 +37,10 @@ Ellipsoid::Ellipsoid(double a, double b, double c)
     , c_(std::move(c))
 {
 }
+
+Mesh::Mesh(std::string_view file_path, double scale)
+    : Shape{.type = "_meshfile_geometry"}
+    , file_path_(file_path)
+    , scale_(std::move(scale))
+{
+}

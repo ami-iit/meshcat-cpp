@@ -10,14 +10,14 @@
 
 #include <string>
 
-#define MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(attribute) \
-private:                                           \
-    double attribute##_;                           \
-                                                   \
-public:                                            \
-    const double& attribute() const                \
-    {                                              \
-        return this->attribute##_;                 \
+#define MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(type, attribute) \
+private:                                                 \
+    type attribute##_;                                   \
+                                                         \
+public:                                                  \
+    const type& attribute() const                        \
+    {                                                    \
+        return this->attribute##_;                       \
     }
 
 namespace MeshcatCpp
@@ -32,7 +32,7 @@ class Sphere : public Shape
 {
 public:
     Sphere(double radius);
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(radius);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, radius);
 };
 
 class Ellipsoid : public Shape
@@ -40,9 +40,9 @@ class Ellipsoid : public Shape
 public:
     Ellipsoid(double a, double b, double c);
 
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(a);
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(b);
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(c);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, a);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, b);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, c);
 };
 
 class Cylinder : public Shape
@@ -50,20 +50,29 @@ class Cylinder : public Shape
 public:
     Cylinder(double radius, double height);
 
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(radius);
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(height);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, radius);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, height);
 };
-
 
 class Box : public Shape
 {
 public:
     Box(double width, double depth, double height);
 
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(width);
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(depth);
-    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(height);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, width);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, depth);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, height);
 };
+
+class Mesh : public Shape
+{
+public:
+    Mesh(std::string_view file_path, double scale = 1);
+
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(std::string, file_path);
+    MESHCAT_CPP_ADD_SHAPE_ATTRIBUTE(double, scale);
+};
+
 
 } // namespace MeshcatCpp
 

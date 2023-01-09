@@ -9,15 +9,14 @@
 #include <MeshcatCpp/Meshcat.h>
 #include <MeshcatCpp/Shape.h>
 
+#include <filesystem>
+
 MeshcatCpp::MatrixView<double> array_to_matrix_view(std::array<double, 16>& array)
 {
     constexpr MeshcatCpp::MatrixView<double>::index_type rows = 4;
     constexpr MeshcatCpp::MatrixView<double>::index_type cols = 4;
-    return MeshcatCpp::make_matrix_view(array.data(),
-                                        rows,
-                                        cols,
-                                        MeshcatCpp::MatrixView<
-                                            double>::MatrixStorageOrdering::ColumnMajor);
+    constexpr auto order = MeshcatCpp::MatrixStorageOrdering::ColumnMajor;
+    return MeshcatCpp::make_matrix_view(array.data(), rows, cols, order);
 }
 
 int main()

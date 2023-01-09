@@ -52,20 +52,16 @@ MeshcatCpp::MatrixView<double> TransformData::transform()
 {
     constexpr MatrixView<double>::index_type rows = 4;
     constexpr MatrixView<double>::index_type cols = 4;
-    return make_matrix_view(this->matrix.data(),
-                            rows,
-                            cols,
-                            MeshcatCpp::MatrixView<double>::MatrixStorageOrdering::ColumnMajor);
+    constexpr auto order = MeshcatCpp::MatrixStorageOrdering::ColumnMajor;
+    return make_matrix_view(this->matrix.data(), rows, cols, order);
 }
 
 MeshcatCpp::MatrixView<const double> TransformData::transform() const
 {
-    constexpr MatrixView<double>::index_type rows = 4;
-    constexpr MatrixView<double>::index_type cols = 4;
-    return make_matrix_view(this->matrix.data(),
-                            rows,
-                            cols,
-                            MeshcatCpp::MatrixView<const double>::MatrixStorageOrdering::ColumnMajor);
+    constexpr MatrixView<const double>::index_type rows = 4;
+    constexpr MatrixView<const double>::index_type cols = 4;
+    constexpr auto order = MeshcatCpp::MatrixStorageOrdering::ColumnMajor;
+    return make_matrix_view(this->matrix.data(), rows, cols, order);
 }
 
 template <typename T> struct PropertyTrampoline : public ::MeshcatCpp::Property<T>
@@ -152,7 +148,7 @@ MeshcatCpp::MatrixView<double> Object3dData::matrix()
     return make_matrix_view(this->matrix_vec,
                             rows,
                             cols,
-                            MeshcatCpp::MatrixView<double>::MatrixStorageOrdering::ColumnMajor);
+                            MeshcatCpp::MatrixStorageOrdering::ColumnMajor);
 }
 
 struct GeometryData
@@ -228,6 +224,34 @@ struct GeometryData
             this->widthSegments = 20;
             this->heightSegments = 20;
             return;
+        }
+
+        if constexpr (std::is_same_v<T, ::MeshcatCpp::Mesh>)
+        {
+            const auto& path = shape.file_path();
+            size_t pos = path.find_last_of('.');
+            if (pos == std::string::npos)
+            {
+                return;
+            }
+            this->format = path.substr(pos + 1);
+
+            std::ifstream input(path, std::ios::binary | std::ios::ate);
+            if (!input.is_open())
+            {
+                return;
+            }
+
+            const int size = input.tellg();
+
+            input.seekg(0, std::ios::beg);
+            this->data.resize(size);
+            input.read(this->data.data(), size);
+
+            input.close();
+
+            return;
+
         }
     }
 };
@@ -431,6 +455,12 @@ public:
             matrix(2, 2) = shape.c();
         }
 
+        if constexpr (std::is_same_v<T, ::MeshcatCpp::Mesh>)
+        {
+            auto matrix = data.object.object.matrix();
+            matrix(0, 0) = matrix(1, 1) = matrix(2, 2) = shape.scale();
+        }
+
         this->loop_->defer([this, data = std::move(data)]() {
             std::stringstream message_stream;
             msgpack::pack(message_stream, data);
@@ -440,10 +470,12 @@ public:
         });
     }
 
-    void set_transform(std::string_view path, MatrixView<const double> matrix)
+    void set_transform(std::string_view path, const MatrixView<const double>& matrix)
     {
         details::TransformData data{.path = this->absolute_path(path)};
-        data.transform() = matrix;
+
+        auto matrix_view = data.transform();
+        matrix_view = matrix;
 
         this->loop_->defer([this, data = std::move(data)]() {
             std::stringstream message_stream;
@@ -568,7 +600,7 @@ void Meshcat::set_object(std::string_view path, const Sphere& sphere, const Mate
 }
 
 
-void Meshcat::set_transform(std::string_view path, MatrixView<const double> matrix)
+void Meshcat::set_transform(std::string_view path, const MatrixView<const double>& matrix)
 {
     this->pimpl_->set_transform(path, matrix);
 }
@@ -581,6 +613,11 @@ void Meshcat::set_object(std::string_view path, const Cylinder& cylinder, const 
 void Meshcat::set_object(std::string_view path, const Ellipsoid& ellipsoid, const Material& material)
 {
     this->pimpl_->set_object(path, ellipsoid, material);
+}
+
+void Meshcat::set_object(std::string_view path, const Mesh& mesh, const Material& material)
+{
+    this->pimpl_->set_object(path, mesh, material);
 }
 
 void Meshcat::set_object(std::string_view path, const Box& box, const Material& material)
