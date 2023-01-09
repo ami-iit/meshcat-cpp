@@ -51,27 +51,22 @@ public:
      */
     void join();
 
-    /**
-     * Forward the set_property command to the meshcat visualizer.
-     * Please check https://github.com/rdeits/meshcat/blob/master/Readme.md#api for further
-     * informations
-     */
     void set_property(std::string_view path, const std::string& property, bool value);
 
     void
-    set_object(std::string_view path, const Sphere& sphere, const Material& material = Material());
+    set_object(std::string_view path, const Sphere& sphere, const Material& material = Material::get_default_material());
 
     void set_object(std::string_view path,
                     const Cylinder& cylinder,
-                    const Material& material = Material());
+                    const Material& material = Material::get_default_material());
 
-    void set_object(std::string_view path, const Box& box, const Material& material = Material());
+    void set_object(std::string_view path, const Box& box, const Material& material = Material::get_default_material());
 
     void set_object(std::string_view path,
                     const Ellipsoid& ellipsoid,
-                    const Material& material = Material());
+                    const Material& material = Material::get_default_material());
 
-    void set_object(std::string_view path, const Mesh& mesh, const Material& material = Material());
+    void set_object(std::string_view path, const Mesh& mesh, const Material& material = Material::get_default_material());
 
     void set_transform(std::string_view path, const MatrixView<const double>& matrix);
 private:

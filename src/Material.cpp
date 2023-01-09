@@ -13,3 +13,18 @@ void Material::set_color(uint8_t r, uint8_t g, uint8_t b)
 {
     this->color = static_cast<int>(r << 16) + static_cast<int>(g << 8) + static_cast<int>(b);
 }
+
+Material Material::get_default_material()
+{
+    Material tmp{.reflectivity = 0.5,
+                 .side = 2,
+                 .transparent = false,
+                 .opacity = 1.0,
+                 .linewidth = 1.0,
+                 .wireframe = false,
+                 .wireframeLineWidth = 1.0,
+                 .vertexColors = false,
+                 .type = Material::Type::MeshPhongMaterial};
+
+    return tmp;
+}

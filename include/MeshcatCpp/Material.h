@@ -29,24 +29,26 @@ public:
     };
 
     int color{(229 << 16) + (229 << 8) + 229};
-    double reflectivity{0.5};
-    int side{2};
-    bool transparent{false};
-    double opacity{1.0};
-    double linewidth{1.0};
-    bool wireframe{false};
-    double wireframeLineWidth{1.0};
+    std::optional<double> reflectivity;
+    std::optional<int> side;
+    std::optional<bool> transparent;
+    std::optional<double> opacity;
+    std::optional<double> linewidth;
+    std::optional<bool> wireframe;
+    std::optional<double> wireframeLineWidth;
     bool vertexColors{false};
     Type type{Type::MeshPhongMaterial};
 
-    std::unordered_map<Type, std::string> typeMap{{Type::MeshBasicMaterial, "MeshBasicMaterial"},
-                                                  {Type::MeshPhongMaterial, "MeshPhongMaterial"},
-                                                  {Type::MeshLambertMaterial, "MeshLambertMaterial"},
-                                                  {Type::MeshToonMaterial, "MeshToonMaterial"},
-                                                  {Type::LineBasicMaterial, "LineBasicMaterial"}};
+    const std::unordered_map<Type, std::string> type_map{{Type::MeshBasicMaterial, "MeshBasicMaterial"},
+                                                         {Type::MeshPhongMaterial, "MeshPhongMaterial"},
+                                                         {Type::MeshLambertMaterial, "MeshLambertMaterial"},
+                                                         {Type::MeshToonMaterial, "MeshToonMaterial"},
+                                                         {Type::LineBasicMaterial, "LineBasicMaterial"}};
 
 
     void set_color(uint8_t r, uint8_t g, uint8_t b);
+
+    static Material get_default_material();
 };
 
 } // namespace MeshcatCpp

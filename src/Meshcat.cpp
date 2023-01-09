@@ -12,12 +12,14 @@
 #include <MeshcatCpp/Shape.h>
 
 #include <MeshcatCpp/impl/FindResource.h>
+#include <MeshcatCpp/impl/MsgpackTypes.h>
 #include <MeshcatCpp/impl/TreeNode.h>
 #include <MeshcatCpp/impl/UUIDGenerator.h>
 
 #include <cstddef>
 #include <fstream>
 #include <future>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -33,6 +35,7 @@
 
 // msgpack
 #include <msgpack.hpp>
+#include <vector>
 
 namespace MeshcatCpp::details
 {
@@ -73,209 +76,6 @@ template <typename T> struct PropertyTrampoline : public ::MeshcatCpp::Property<
                        MSGPACK_NVP("path", ::MeshcatCpp::Property<T>::path),
                        MSGPACK_NVP("property", ::MeshcatCpp::Property<T>::property),
                        MSGPACK_NVP("value", ::MeshcatCpp::Property<T>::value));
-};
-
-struct MaterialTrampoline : public ::MeshcatCpp::Material
-{
-    std::string uuid;
-    MSGPACK_DEFINE_MAP(uuid,
-                       MSGPACK_NVP("type", typeMap.at(type)),
-                       color,
-                       reflectivity,
-                       side,
-                       transparent,
-                       opacity,
-                       linewidth,
-                       wireframe,
-                       wireframeLineWidth,
-                       vertexColors);
-
-    // TODO it cannot be copiable
-    MaterialTrampoline();
-    void operator=(const ::MeshcatCpp::Material& material);
-};
-
-MaterialTrampoline::MaterialTrampoline()
-{
-    this->uuid = MeshcatCpp::details::UUIDGenerator::generator()();
-}
-
-// TODO remvoe me store reference to material
-void MaterialTrampoline::operator=(const ::MeshcatCpp::Material& material)
-{
-    this->color = material.color;
-    this->reflectivity = material.reflectivity;
-    this->side = material.side;
-    this->transparent = material.transparent;
-    this->opacity = material.opacity;
-    this->linewidth = material.linewidth;
-    this->wireframe = material.wireframe;
-    this->wireframeLineWidth = material.wireframeLineWidth;
-    this->vertexColors = material.vertexColors;
-}
-
-struct ObjectMetaData
-{
-    std::string type{"Object"};
-    double version{4.5};
-    MSGPACK_DEFINE_MAP(type, version);
-};
-
-struct Object3dData
-{
-    std::string uuid;
-    std::string type;
-    std::string geometry;
-    std::string material;
-    double matrix_vec[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-    MSGPACK_DEFINE_MAP(uuid, type, geometry, material, MSGPACK_NVP("matrix", matrix_vec));
-
-    // TODO it cannot be copiable
-    Object3dData();
-
-    MeshcatCpp::MatrixView<double> matrix();
-};
-
-Object3dData::Object3dData()
-{
-    this->uuid = MeshcatCpp::details::UUIDGenerator::generator()();
-}
-
-MeshcatCpp::MatrixView<double> Object3dData::matrix()
-{
-    constexpr MatrixView<double>::index_type rows = 4;
-    constexpr MatrixView<double>::index_type cols = 4;
-    return make_matrix_view(this->matrix_vec,
-                            rows,
-                            cols,
-                            MeshcatCpp::MatrixStorageOrdering::ColumnMajor);
-}
-
-struct GeometryData
-{
-    std::string uuid;
-    std::string type;
-    std::optional<double> width;
-    std::optional<double> height;
-    std::optional<double> depth;
-    std::optional<double> radius;
-    std::optional<double> widthSegments;
-    std::optional<double> heightSegments;
-    std::optional<double> radiusTop;
-    std::optional<double> radiusBottom;
-    std::optional<double> radialSegments;
-    std::optional<std::string> format;
-    std::vector<char> data;
-    MSGPACK_DEFINE_MAP(uuid,
-                       type,
-                       width,
-                       height,
-                       depth,
-                       radius,
-                       widthSegments,
-                       heightSegments,
-                       radiusTop,
-                       radiusBottom,
-                       radialSegments,
-                       format,
-                       data);
-    GeometryData();
-
-    template <typename T> void from_shape(const T& shape)
-    {
-        this->type = shape.type;
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Sphere>)
-        {
-            this->radius = shape.radius();
-            this->widthSegments = 20;
-            this->heightSegments = 20;
-            return;
-        }
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Ellipsoid>)
-        {
-            // the axis are set within the transform matrix
-            this->radius = 1;
-            this->widthSegments = 20;
-            this->heightSegments = 20;
-            return;
-        }
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Cylinder>)
-        {
-            // this->radius = shape.radius();
-            this->radiusTop = shape.radius();
-            this->radiusBottom = shape.radius();
-            this->height = shape.height();
-            this->radialSegments = 50;
-
-            // TODO understand if required
-            this->heightSegments = 20;
-            return;
-        }
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Box>)
-        {
-            this->width = shape.width();
-            this->height = shape.depth();
-            this->depth = shape.height();
-            // TODO understand if required
-            this->widthSegments = 20;
-            this->heightSegments = 20;
-            return;
-        }
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Mesh>)
-        {
-            const auto& path = shape.file_path();
-            size_t pos = path.find_last_of('.');
-            if (pos == std::string::npos)
-            {
-                return;
-            }
-            this->format = path.substr(pos + 1);
-
-            std::ifstream input(path, std::ios::binary | std::ios::ate);
-            if (!input.is_open())
-            {
-                return;
-            }
-
-            const int size = input.tellg();
-
-            input.seekg(0, std::ios::beg);
-            this->data.resize(size);
-            input.read(this->data.data(), size);
-
-            input.close();
-
-            return;
-
-        }
-    }
-};
-
-GeometryData::GeometryData()
-{
-    this->uuid = MeshcatCpp::details::UUIDGenerator::generator()();
-}
-
-struct LumpedObjectData
-{
-    ObjectMetaData metadata{};
-    GeometryData geometries[1];
-    MaterialTrampoline materials[1];
-    Object3dData object;
-    MSGPACK_DEFINE_MAP(metadata, geometries, materials, object);
-};
-
-struct SetObjectData
-{
-    std::string type{"set_object"};
-    std::string path;
-    LumpedObjectData object;
-    MSGPACK_DEFINE_MAP(type, path, object);
 };
 
 } // namespace MeshcatCpp::details
@@ -441,25 +241,12 @@ public:
         static_assert(std::is_base_of_v<::MeshcatCpp::Shape, T>, "Invalid shape type");
 
         details::SetObjectData data{.path = this->absolute_path(path)};
-        data.object.materials[0] = material;
-        data.object.geometries[0].from_shape(shape);
+        data.object.material = std::make_unique<details::MaterialTrampoline>(material);
+        data.object.geometry = std::make_unique<typename details::traits<T>::trampoline>(shape);
         data.object.object.type = "Mesh";
-        data.object.object.material = data.object.materials[0].uuid;
-        data.object.object.geometry = data.object.geometries[0].uuid;
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Ellipsoid>)
-        {
-            auto matrix = data.object.object.matrix();
-            matrix(0, 0) = shape.a();
-            matrix(1, 1) = shape.b();
-            matrix(2, 2) = shape.c();
-        }
-
-        if constexpr (std::is_same_v<T, ::MeshcatCpp::Mesh>)
-        {
-            auto matrix = data.object.object.matrix();
-            matrix(0, 0) = matrix(1, 1) = matrix(2, 2) = shape.scale();
-        }
+        data.object.object.material = data.object.material->uuid;
+        data.object.object.geometry = data.object.geometry->uuid;
+        data.object.object.update_matrix_from_shape(shape);
 
         this->loop_->defer([this, data = std::move(data)]() {
             std::stringstream message_stream;
@@ -598,7 +385,6 @@ void Meshcat::set_object(std::string_view path, const Sphere& sphere, const Mate
 {
     this->pimpl_->set_object(path, sphere, material);
 }
-
 
 void Meshcat::set_transform(std::string_view path, const MatrixView<const double>& matrix)
 {
