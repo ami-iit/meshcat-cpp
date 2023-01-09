@@ -29,25 +29,36 @@ int main()
 
     m.set_color(66, 133, 244);
     meshcat.set_object("box", MeshcatCpp::Box(0.5, 0.5, 0.5), m);
-    matrix_view(3, 1) = 1.75;
+    matrix_view(1, 3) = 1.75;
+
     meshcat.set_transform("box", matrix_view);
 
     m.set_color(234, 67, 53);
     meshcat.set_object("sphere", MeshcatCpp::Sphere(0.5), m);
-    matrix_view(3, 1) = 0.75;
+    matrix_view(1, 3) = 0.75;
     meshcat.set_transform("sphere", matrix_view);
 
     m.set_color(251, 188, 5);
     meshcat.set_object("ellipsoid", MeshcatCpp::Ellipsoid(0.5, 0.25, 0.75), m);
-    matrix_view(3, 1) = -0.75;
+    matrix_view(1, 3) = -0.75;
     meshcat.set_transform("ellipsoid", matrix_view);
 
     m.set_color(52, 168, 83);
     meshcat.set_object("cylinder", MeshcatCpp::Cylinder(0.25, 0.5), m);
-    matrix_view(3, 1) = -1.75;
+    matrix_view(1, 3) = -1.75;
     meshcat.set_transform("cylinder", matrix_view);
+
+    const auto stl_path = std::filesystem::path(__FILE__).parent_path() / "misc" / "Dragonite.stl";
+    meshcat.set_object("obj", MeshcatCpp::Mesh(stl_path.string(), 0.01));
+    matrix_view(0, 3) = -1;
+    matrix_view(1, 3) = 0;
+    matrix_view(0, 0) = 0;
+    matrix_view(1, 1) = 0;
+    matrix_view(0, 1) = -1;
+    matrix_view(1, 0) = 1;
+    meshcat.set_transform("obj", matrix_view);
 
     meshcat.join();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
