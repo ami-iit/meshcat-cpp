@@ -155,6 +155,10 @@ public:
         const int kMaxPort = 7099;
 
         uWS::App::WebSocketBehavior<PerSocketData> behavior;
+
+        // Set maxBackpressure = 0 so that uWS does *not* drop any messages due to
+        // back pressure.
+        behavior.maxBackpressure = 0;
         behavior.open = [this](WebSocket* ws) {
             ws->subscribe("all");
             // Update this new connection with previously published data.
