@@ -9,6 +9,7 @@
 #include <MeshcatCpp/Meshcat.h>
 #include <MeshcatCpp/Shape.h>
 
+#include <array>
 #include <filesystem>
 
 MeshcatCpp::MatrixView<double> array_to_matrix_view(std::array<double, 16>& array)
