@@ -21,13 +21,19 @@ Self-contained C++ interface for the [MeshCat visualizer](https://github.com/rde
 
 ## 🏗️ Dependencies
 
-**meshcat-cpp** is a self-contained library. All the dependencies are cloned at compile time and they are statically linked to the library. The only dependency you need is a sufficiently recent C++ compiler (full support to C++17) and `cmake`.
+**meshcat-cpp** is a self-contained library. Most dependencies can be cloned at compile time and they are statically linked to the library. The only dependencies you need is a sufficiently recent C++ compiler (full support to C++17), `cmake`, `openssl`, `zlib`, `libuv`, `boost` and `pkg-config`.
+
+### Install dependencies on Debian/Ubuntu
+
+~~~
+sudo apt install cmake pkg-config build-essential libssl-dev libuv1-dev libz-dev libboost-dev
+~~~
 
 ## ⚒️ Build the library
 
 You can build the library coping and paste the following snippet into a terminal
 ```console
-git clone --recurse-submodules https://github.com/GiulioRomualdi/meshcat-cpp.git
+git clone https://github.com/GiulioRomualdi/meshcat-cpp.git
 cd meshcat-cpp
 mkdir build && cd build
 cmake ..

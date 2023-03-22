@@ -28,16 +28,26 @@ else()
 endif()
 
 
-option(MESHCAT_CPP_USE_SYSTEM_MSGPACK "Use system msgpack" OFF)
-mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_MSGPACK)
-if(MESHCAT_CPP_USE_SYSTEM_MSGPACK)
-  find_package(msgpack REQUIRED)
+option(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX "Use system msgpack-cxx" OFF)
+mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX)
+if(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX)
+  find_package(msgpack-cxx REQUIRED)
 else()
   include(FetchContent)
   FetchContent_Declare(
-    msgpack
-    GIT_REPOSITORY https://github.com/msgpack/msgpack-c.git
-    GIT_TAG        cpp-4.1.3
+    msgpackcxx
+    URL https://github.com/msgpack/msgpack-c/archive/refs/tags/cpp-6.0.0.zip
   )
-  FetchContent_MakeAvailable(msgpack)
+  FetchContent_MakeAvailable(msgpackcxx)
+endif()
+
+option(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS "Use system uwebsockets" OFF)
+if(NOT MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS AND NOT BUILD_SHARED_LIBS)
+    message(FATAL_ERROR "MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS and BUILD_SHARED_LIBS can't be OFF at the same time")
+endif()
+mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS)
+if(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS)
+  find_package(uWebSockets REQUIRED)
+else()
+  include(FetchuWebSockets)
 endif()
