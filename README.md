@@ -29,6 +29,17 @@ Self-contained C++ interface for the [MeshCat visualizer](https://github.com/rde
 sudo apt install cmake pkg-config build-essential libssl-dev libuv1-dev libz-dev libboost-dev
 ~~~
 
+### Install dependencies with conda-forge
+
+~~~
+mamba create -n meshcatcppdev boost-cpp libuwebsockets cmake pkg-config compilers zlib openssl libuv
+~~~
+
+Then, execute all the other commands after activating the environment:
+~~~
+mamba activate meshcatcppdev
+~~~
+
 ## ⚒️ Build the library
 
 You can build the library coping and paste the following snippet into a terminal

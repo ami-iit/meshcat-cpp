@@ -6,6 +6,9 @@ cmake_minimum_required(VERSION 3.5)
 project(MeshcatCpp
   VERSION 0.1.0)
 
+# Avoid warnings with CMake 3.26
+cmake_policy(SET CMP0135 NEW)
+
 # ouptut paths
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
@@ -56,7 +59,7 @@ endif()
 
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
-add_subdirectory(deps EXCLUDE_FROM_ALL)
+include(MeshcatCppDeps)
 
 set(MESHCAT_CPP_MISC_RELATIVE_PATH share/${PROJECT_NAME}/misc)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/FindResource.cpp.in
@@ -94,7 +97,6 @@ reloc_cpp_generate(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-add_dependencies(${PROJECT_NAME} uWebSockets)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   stduuid

@@ -1,3 +1,13 @@
+# Some dependencies are available in conda-forge but not in Debian/Ubuntu
+# If we are in a conda environment, let's assume that the dependency are available
+# and use them by default. Advanced user can always cahnge the MESHCAT_CPP_USE_SYSTEM_*
+# variables to match the desired behaviour
+if(DEFINED ENV{CONDA_PREFIX})
+  set(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS_DEFAULT ON)
+else()
+  set(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS_DEFAULT OFF)
+endif()
+
 # Handle relocatability via reloc-cpp
 option(MESHCAT_CPP_USE_SYSTEM_RELOC_CPP "Use system reloc-cpp" OFF)
 mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_RELOC_CPP)
@@ -41,7 +51,7 @@ else()
   FetchContent_MakeAvailable(msgpackcxx)
 endif()
 
-option(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS "Use system uwebsockets" OFF)
+option(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS "Use system uwebsockets" ${MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS_DEFAULT})
 if(NOT MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS AND NOT BUILD_SHARED_LIBS)
     message(FATAL_ERROR "MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS and BUILD_SHARED_LIBS can't be OFF at the same time")
 endif()
