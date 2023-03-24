@@ -45,13 +45,13 @@
 #include <memory>
 
 #include <MeshcatCpp/Material.h>
-#include <MeshcatCpp/Shape.h>
 #include <MeshcatCpp/MatrixView.h>
+#include <MeshcatCpp/Shape.h>
 
 namespace MeshcatCpp
 {
 /**
- * The Meshcat class provides an interface to [meshcat]( https://github.com/rdeits/meshcat).
+ * The Meshcat class provides an interface to [meshcat](https://github.com/rdeits/meshcat).
  * This class's instances start a thread that runs a http/websocket server. Users may view the
  * Meshcat scene by navigating their browser to the hosted URL.
  * Users can exploit this class to load primary shapes (e.g. spheres, cylinders ellipsoids and
@@ -87,24 +87,29 @@ public:
 
     void set_property(std::string_view path, const std::string& property, bool value);
 
-    void
-    set_object(std::string_view path, const Sphere& sphere, const Material& material = Material::get_default_material());
+    void set_object(std::string_view path,
+                    const Sphere& sphere,
+                    const Material& material = Material::get_default_material());
 
     void set_object(std::string_view path,
                     const Cylinder& cylinder,
                     const Material& material = Material::get_default_material());
 
-    void set_object(std::string_view path, const Box& box, const Material& material = Material::get_default_material());
+    void set_object(std::string_view path,
+                    const Box& box,
+                    const Material& material = Material::get_default_material());
 
     void set_object(std::string_view path,
                     const Ellipsoid& ellipsoid,
                     const Material& material = Material::get_default_material());
 
-    void set_object(std::string_view path, const Mesh& mesh, const Material& material = Material::get_default_material());
+    void set_object(std::string_view path,
+                    const Mesh& mesh,
+                    const Material& material = Material::get_default_material());
 
     void set_transform(std::string_view path, const MatrixView<const double>& matrix);
-private:
 
+private:
     class Impl;
     std::unique_ptr<Impl> pimpl_;
 };
