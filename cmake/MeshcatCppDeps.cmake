@@ -20,7 +20,11 @@ else()
     GIT_REPOSITORY https://github.com/ami-iit/reloc-cpp.git
     GIT_TAG        v0.1.0
   )
-  FetchContent_MakeAvailable(reloc-cpp)
+  FetchContent_GetProperties(reloc-cpp)
+  if(NOT reloc-cpp_POPULATED)
+    FetchContent_Populate(reloc-cpp)
+    add_subdirectory(${reloc-cpp_SOURCE_DIR} ${reloc-cpp_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 endif()
 
 option(MESHCAT_CPP_USE_SYSTEM_STDUUID "Use system stduuid" OFF)
@@ -34,7 +38,11 @@ else()
     GIT_REPOSITORY https://github.com/mariusbancila/stduuid.git
     GIT_TAG        v1.2.2
   )
-  FetchContent_MakeAvailable(stduuid)
+  FetchContent_GetProperties(stduuid)
+  if(NOT stduuid_POPULATED)
+    FetchContent_Populate(stduuid)
+    add_subdirectory(${stduuid_SOURCE_DIR} ${stduuid_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 endif()
 
 
@@ -45,10 +53,14 @@ if(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX)
 else()
   include(FetchContent)
   FetchContent_Declare(
-    msgpackcxx
+    msgpack-cxx
     URL https://github.com/msgpack/msgpack-c/archive/refs/tags/cpp-6.0.0.zip
   )
-  FetchContent_MakeAvailable(msgpackcxx)
+  FetchContent_GetProperties(msgpack-cxx)
+  if(NOT msgpack-cxx_POPULATED)
+    FetchContent_Populate(msgpack-cxx)
+    add_subdirectory(${msgpack-cxx_SOURCE_DIR} ${msgpack-cxx_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 endif()
 
 option(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS "Use system uwebsockets" ${MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS_DEFAULT})
