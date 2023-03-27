@@ -4,8 +4,10 @@
 # variables to match the desired behaviour
 if(DEFINED ENV{CONDA_PREFIX})
   set(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS_DEFAULT ON)
+  set(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX_DEFAULT ON)
 else()
   set(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS_DEFAULT OFF)
+  set(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX_DEFAULT OFF)
 endif()
 
 # Handle relocatability via reloc-cpp
@@ -46,7 +48,7 @@ else()
 endif()
 
 
-option(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX "Use system msgpack-cxx" OFF)
+option(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX "Use system msgpack-cxx" ${MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX_DEFAULT})
 mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX)
 if(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX)
   find_package(msgpack-cxx REQUIRED)

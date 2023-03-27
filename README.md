@@ -32,7 +32,7 @@ sudo apt install cmake pkg-config build-essential libssl-dev libuv1-dev libz-dev
 ### Install dependencies with conda-forge
 
 ~~~
-mamba create -n meshcatcppdev boost-cpp libuwebsockets cmake pkg-config compilers zlib openssl libuv
+mamba create -n meshcatcppdev boost-cpp libuwebsockets cmake pkg-config compilers zlib openssl libuv msgpack-cxx
 ~~~
 
 Then, execute all the other commands after activating the environment:
