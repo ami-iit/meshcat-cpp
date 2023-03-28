@@ -38,11 +38,12 @@ else()
   FetchContent_Declare(
     stduuid
     GIT_REPOSITORY https://github.com/mariusbancila/stduuid.git
-    GIT_TAG        v1.2.2
+    GIT_TAG        v1.2.3
   )
   FetchContent_GetProperties(stduuid)
   if(NOT stduuid_POPULATED)
     FetchContent_Populate(stduuid)
+    #set(UUID_USING_CXX20_SPAN ON CACHE BOOL "" FORCE)
     add_subdirectory(${stduuid_SOURCE_DIR} ${stduuid_BINARY_DIR} EXCLUDE_FROM_ALL)
   endif()
 endif()

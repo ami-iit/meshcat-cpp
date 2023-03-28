@@ -7,7 +7,9 @@ project(MeshcatCpp
   VERSION 0.1.0)
 
 # Avoid warnings with CMake 3.26
-cmake_policy(SET CMP0135 NEW)
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 # ouptut paths
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
