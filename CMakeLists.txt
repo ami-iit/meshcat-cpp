@@ -1,7 +1,7 @@
 # Authors: Giulio Romualdi
 
 # Set cmake mimimun version
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 project(MeshcatCpp
   VERSION 0.1.0)
@@ -96,7 +96,7 @@ reloc_cpp_generate(${PROJECT_NAME}
                    GENERATED_FUNCTION MeshcatCpp::getInstallPrefix)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   stduuid
