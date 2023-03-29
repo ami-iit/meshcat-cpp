@@ -98,7 +98,7 @@ reloc_cpp_generate(${PROJECT_NAME}
                    GENERATED_FUNCTION MeshcatCpp::getInstallPrefix)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
   stduuid
