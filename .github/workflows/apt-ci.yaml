@@ -10,17 +10,19 @@ on:
 
 jobs:
   build:
-    name: '[${{ matrix.os }}@${{ matrix.build_type }}@apt]'
+    name: '[${{ matrix.docker_image }}@${{ matrix.build_type }}@apt]'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         build_type: [Release]
         os:
+          - ubuntu-latest
+        docker_image:
           - "ubuntu:20.04"
           - "ubuntu:22.04"
           - "debian:sid"      
     container:
-      image: ${{ matrix.os }}
+      image: ${{ matrix.docker_image }}
 
     steps:
     - uses: actions/checkout@v3
