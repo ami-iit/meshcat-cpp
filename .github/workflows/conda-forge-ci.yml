@@ -33,9 +33,10 @@ jobs:
 
     # Workaround for https://github.com/conda-forge/boost-cpp-feedstock/issues/134
     - name: Dependencies
+      if: contains(matrix.os, 'macos')
       shell: bash -l {0}
       run: |
-        mamba install libcxx<16
+        mamba install "libcxx<16"
 
 
     - name: Configure [Linux&macOS]
