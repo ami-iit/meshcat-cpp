@@ -2,7 +2,7 @@
 <h1 align="center">meshcat-cpp</h1>
 </p>
 <p align="center">
-<a href="https://isocpp.org"><img src="https://img.shields.io/badge/standard-C++17-blue.svg?style=flat&logo=c%2B%2B" alt="C++ Standard"/></a>
+<a href="https://isocpp.org"><img src="https://img.shields.io/badge/standard-C++20-blue.svg?style=flat&logo=c%2B%2B" alt="C++ Standard"/></a>
 <a href="./LICENSE"><img src="https://img.shields.io/badge/License-BSD_3--Clause-orange.svg" alt="Size" /></a>
 </p>
 
@@ -21,7 +21,7 @@ Self-contained C++ interface for the [MeshCat visualizer](https://github.com/rde
 
 ## 🏗️ Dependencies
 
-**meshcat-cpp** is a self-contained library. Most dependencies can be cloned at compile time and they are statically linked to the library. The only dependencies you need is a sufficiently recent C++ compiler (full support to C++17), `cmake`, `openssl`, `zlib`, `libuv`, `boost` and `pkg-config`.
+**meshcat-cpp** is a self-contained library. Most dependencies can be cloned at compile time and they are statically linked to the library. The only dependencies you need is a sufficiently recent C++ compiler (full support to C++20), `cmake`, `openssl`, `zlib`, `libuv`, `boost` and `pkg-config`.
 
 ### Install dependencies on Debian/Ubuntu
 
