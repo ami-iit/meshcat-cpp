@@ -30,6 +30,9 @@ jobs:
 
     - name: Dependencies
       run: |
+        # See  https://stackoverflow.com/questions/44331836/apt-get-install-tzdata-noninteractive,
+        # only required by Ubuntu 20.04
+        export DEBIAN_FRONTEND=noninteractive
         apt-get update
         apt-get -y upgrade
         apt-get -y install cmake pkg-config build-essential ninja-build git libssl-dev libuv1-dev libz-dev libboost-dev
