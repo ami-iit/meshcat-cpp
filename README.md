@@ -26,7 +26,7 @@ Self-contained C++ interface for the [MeshCat visualizer](https://github.com/rde
 ### Install dependencies on Debian/Ubuntu
 
 ~~~
-sudo apt install cmake pkg-config build-essential libssl-dev libuv1-dev libz-dev libboost-dev
+sudo apt install cmake pkg-config build-essential ninja-build git libssl-dev libuv1-dev libz-dev libboost-dev
 ~~~
 
 ### Install dependencies with conda-forge
