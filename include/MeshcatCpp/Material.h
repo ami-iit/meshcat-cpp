@@ -13,6 +13,7 @@
 #include <optional>
 #include <unordered_map>
 #include <utility>
+#include <stdint.h>
 
 namespace MeshcatCpp
 {
