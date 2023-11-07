@@ -102,7 +102,6 @@ struct MaterialTrampoline
 
     // This method must be defined, but the implementation is not needed.
     void msgpack_unpack(msgpack::object const&);
-
 };
 
 struct ObjectMetaData
@@ -110,9 +109,7 @@ struct ObjectMetaData
     const std::string type{"Object"};
     const double version{4.5};
 
-    template <typename Packer>
-
-    void msgpack_pack(Packer& o) const
+    template <typename Packer> void msgpack_pack(Packer& o) const
     {
         constexpr int n = 2;
         o.pack_map(n);
@@ -217,8 +214,7 @@ struct MeshData
 
     MeshcatCpp::MatrixView<double> matrix();
 
-    template<typename T>
-    void update_matrix_from_shape(const T& shape)
+    template <typename T> void update_matrix_from_shape(const T& shape)
     {
         if constexpr (std::is_same_v<T, ::MeshcatCpp::Ellipsoid>)
         {
