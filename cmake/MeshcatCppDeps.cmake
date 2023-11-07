@@ -10,25 +10,6 @@ else()
   set(MESHCAT_CPP_USE_SYSTEM_MSGPACKCXX_DEFAULT OFF)
 endif()
 
-# Handle relocatability via reloc-cpp
-option(MESHCAT_CPP_USE_SYSTEM_RELOC_CPP "Use system reloc-cpp" OFF)
-mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_RELOC_CPP)
-if(MESHCAT_CPP_USE_SYSTEM_RELOC_CPP)
-  find_package(reloc-cpp REQUIRED)
-else()
-  include(FetchContent)
-  FetchContent_Declare(
-    reloc-cpp
-    GIT_REPOSITORY https://github.com/ami-iit/reloc-cpp.git
-    GIT_TAG        v0.1.0
-  )
-  FetchContent_GetProperties(reloc-cpp)
-  if(NOT reloc-cpp_POPULATED)
-    FetchContent_Populate(reloc-cpp)
-    add_subdirectory(${reloc-cpp_SOURCE_DIR} ${reloc-cpp_BINARY_DIR} EXCLUDE_FROM_ALL)
-  endif()
-endif()
-
 option(MESHCAT_CPP_USE_SYSTEM_STDUUID "Use system stduuid" OFF)
 mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_STDUUID)
 if(MESHCAT_CPP_USE_SYSTEM_STDUUID)
@@ -75,4 +56,23 @@ if(MESHCAT_CPP_USE_SYSTEM_UWEBSOCKETS)
   find_package(uWebSockets REQUIRED)
 else()
   include(FetchuWebSockets)
+endif()
+
+# Handle relocatability via cmrc
+option(MESHCAT_CPP_USE_SYSTEM_CMRC "Use system cmrc" OFF)
+mark_as_advanced(MESHCAT_CPP_USE_SYSTEM_CMRC)
+if(MESHCAT_CPP_USE_SYSTEM_CMRC)
+  find_package(CMakeRC REQUIRED)
+else()
+  include(FetchContent)
+  FetchContent_Declare(
+    cmrc
+    GIT_REPOSITORY https://github.com/vector-of-bool/cmrc.git
+    GIT_TAG        2.0.1
+  )
+  FetchContent_GetProperties(cmrc)
+  if(NOT cmrc_POPULATED)
+    FetchContent_Populate(cmrc)
+    add_subdirectory(${cmrc_SOURCE_DIR} ${cmrc_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 endif()

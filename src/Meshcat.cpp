@@ -37,6 +37,10 @@
 #include <msgpack.hpp>
 #include <vector>
 
+// cmrc
+#include <cmrc/cmrc.hpp>
+CMRC_DECLARE(MeshcatCpp);
+
 namespace MeshcatCpp::details
 {
 
@@ -124,17 +128,17 @@ public:
 
     Impl()
     {
-        if (!this->load_file("index.html", this->index_html_))
+        if (!this->load_file("misc/index.html", this->index_html_))
         {
             throw std::runtime_error("Unable to load index.html");
         }
 
-        if (!this->load_file("favicon.ico", this->favicon_))
+        if (!this->load_file("misc/favicon.ico", this->favicon_))
         {
             throw std::runtime_error("Unable to load index.html");
         }
 
-        if (!this->load_file("main.min.js", this->main_min_js_))
+        if (!this->load_file("misc/main.min.js", this->main_min_js_))
         {
             throw std::runtime_error("Unable to load main.min.js");
         }
@@ -282,18 +286,25 @@ public:
 private:
     static bool load_file(const std::string& filename, std::string& content)
     {
-        const auto file_path = MeshcatCpp::details::get_resource_path(filename);
-        std::ifstream file(file_path.c_str(), std::ios::in);
-        if (!file.is_open())
+        auto fs = ::cmrc::MeshcatCpp::get_filesystem();
+        if (!fs.exists(filename))
         {
+            std::cerr << "Unable to find " << filename << " in the embedded filesystem"
+                      << std::endl;
             return false;
         }
+        try
+        {
+            const auto file = fs.open(filename);
+            content = std::string(file.begin(), file.end());
+        } catch (const std::exception& e)
+        {
+            std::cerr << "Unable to open " << filename << " in the embedded filesystem"
+                      << std::endl;
+            std::cerr << "The following exception has been throw " << e.what() << std::endl;
 
-        std::stringstream ss;
-        ss << file.rdbuf();
-        file.close();
-
-        content = ss.str();
+            return false;
+        }
 
         return true;
     }
