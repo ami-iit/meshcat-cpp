@@ -27,10 +27,10 @@
 #define PACK_MAP_VAR_FROM_INNER_CLASS(packer, inner_class, var) \
     PACK_MAP_VAR_WITH_NAME(packer, var, inner_class.var);
 
-#define PACK_MAP_OPTIONAL_VAR_WITH_NAME(packer, name, var)  \
-    if (var)                                                \
-    {                                                       \
-        PACK_MAP_VAR_WITH_NAME(packer, #name, var.value()); \
+#define PACK_MAP_OPTIONAL_VAR_WITH_NAME(packer, name, var) \
+    if (var)                                               \
+    {                                                      \
+        PACK_MAP_VAR_WITH_NAME(packer, name, var.value()); \
     }
 
 #define PACK_MAP_OPTIONAL_VAR_FROM_INNER_CLASS(packer, inner_class, var) \
