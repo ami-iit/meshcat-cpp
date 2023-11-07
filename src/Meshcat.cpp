@@ -214,7 +214,8 @@ public:
             = this->app_future_.get();
     }
 
-    template <typename T> void set_property(const Property<T>& property)
+    template <typename T>
+    void set_property(const Property<T>& property)
     {
         details::PropertyTrampoline<T> data{property};
         this->loop_->defer([this, data = std::move(data)]() {
@@ -240,6 +241,7 @@ public:
             (*this->root_)[data.path]->value().properties[data.property] = std::move(msg);
         });
     }
+
 
     template <typename T>
     void set_object(std::string_view path, const T& shape, const Material& material)
@@ -368,7 +370,7 @@ private:
 
     std::shared_ptr<details::TreeNode<Node>> root_;
     std::string prefix_{"meshcat"};
-};
+    };
 
 Meshcat::Meshcat()
 {
