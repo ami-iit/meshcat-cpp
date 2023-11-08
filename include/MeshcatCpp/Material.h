@@ -48,7 +48,7 @@ public:
                                                          {Type::LineBasicMaterial, "LineBasicMaterial"}};
 
 
-    void set_color(uint8_t r, uint8_t g, uint8_t b);
+    void set_color(uint8_t r, uint8_t g, uint8_t b, double a = 1.0);
 
     static Material get_default_material();
 };
